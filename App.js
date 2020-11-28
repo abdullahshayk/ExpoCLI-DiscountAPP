@@ -1,32 +1,49 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, Modal } from 'react-native';
 
 export default class App extends Component {
   constructor(prop){
     super(prop);
     this.state={
       OriginalPrice:0,
+      OriginalPriceModal:"",
       DiscountPercentage:"",
+      DiscountPercentageModal:"",
       YouSave:"You Save",
-      FinalPrice:"Final Price"
+      FinalPrice:"Final Price",
+      FinalPriceModal:"",
+      ModalVisibility:false,
+      check:false
     }
   }
 
   calculate=()=>{
     if(this.state.OriginalPrice===0 || this.state.DiscountPercentage==="" ){
       alert("EMPTY FIELDS!!")
+      this.setState({
+        check:false
+      })
     }
     else if(this.state.OriginalPrice<0){
       alert("price cannot be less than 0")
+      this.setState({
+        check:false
+      })
 
     }
     else if(this.state.DiscountPercentage>100){
       alert("Discount is never greater than 100")
+      this.setState({
+        check:false
+      })
 
     }
     else if(this.state.DiscountPercentage<0){
       alert("Discount is never lesser than 0")
+      this.setState({
+        check:false
+      })
 
     }
     else{
@@ -34,10 +51,28 @@ export default class App extends Component {
     const saved=(this.state.OriginalPrice-this.state.OriginalPrice-(this.state.OriginalPrice*(this.state.DiscountPercentage/100)))
     this.setState({
       FinalPrice:discount,
-      YouSave:Math.abs(saved)
+      YouSave:Math.abs(saved),
+      check:true
     })
 
   }}
+  saveInfo=()=>{
+    if(this.state.check==true){
+      this.setState({
+        OriginalPriceModal:this.state.OriginalPrice,
+        DiscountPercentageModal:this.state.DiscountPercentage,
+        FinalPriceModal:this.state.FinalPrice,
+      })
+      alert("Saved")
+  
+      
+    }
+    else{
+      alert("empty fields")
+    }
+  }
+
+
   render() {
   return (
     <View style={styles.container}>
@@ -57,8 +92,40 @@ export default class App extends Component {
         <View >
   <Text style={styles.output}>{this.state.FinalPrice}</Text>
   <Text style={styles.output}>{this.state.YouSave}</Text>
-
   </View>
+
+
+
+
+  <Modal visible={this.state.ModalVisibility}>
+  <View style={styles.container}>
+  <View style={{flexDirection:'row', justifyContent:"space-between" }}>
+        
+        <Text style={styles.Modalsitem}>Original Price</Text>
+        <Text style={styles.Modalsitem}>Discount</Text>
+        <Text style={styles.Modalsitem}>Final Price</Text>
+  
+       
+  
+          </View>
+  <View style={{flexDirection:'row', justifyContent:"space-between" }}>
+        
+  <Text style={styles.Modalsitem}>{this.state.OriginalPriceModal}</Text>
+  <Text style={styles.Modalsitem}>{this.state.DiscountPercentageModal}</Text>
+  <Text style={styles.Modalsitem}>{this.state.FinalPriceModal}</Text>
+  
+       
+  
+          </View>
+<TouchableOpacity style={styles.ModalBTN} onPress={()=>{this.setState({ModalVisibility:false})}}><Text style={{fontSize:20}}>Close</Text></TouchableOpacity>
+</View>
+  </Modal>
+  <View style={{marginTop:33}}>
+  <TouchableOpacity style={styles.EndBTN} onPress={()=>this.saveInfo()}><Text style={{fontSize:20}}>Save</Text></TouchableOpacity>
+  <TouchableOpacity style={styles.EndBTN} onPress={()=>{this.setState({ModalVisibility:true})}}><Text style={{fontSize:20}}>View History</Text></TouchableOpacity>
+    </View>
+
+
     </View>
   );
 }
@@ -104,5 +171,36 @@ const styles = StyleSheet.create({
     alignItems:"center",
     textAlign:"center"
 
+  },
+  EndBTN:{
+    backgroundColor:"#db7093",
+    padding:8,
+    width:150,
+    textAlign:"center",
+    alignItems:"center",
+    borderRadius:19,
+    margin:10
+  },
+  ModalVisibility: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 40,
+  },
+  ModalBTN:{
+    backgroundColor:"#db7093",
+    position: 'absolute',
+    bottom:0,
+    padding:8,
+    width:150,
+    textAlign:"center",
+    alignItems:"center",
+    borderRadius:19,
+    margin:10
+  },
+  Modalsitem:{
+    marginHorizontal:20,
+    top:-250
   }
 });
